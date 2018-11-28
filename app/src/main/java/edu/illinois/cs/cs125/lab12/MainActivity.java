@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -35,6 +36,8 @@ public final class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         // Set up a queue for our Volley requests
         requestQueue = Volley.newRequestQueue(this);
 
@@ -54,32 +57,43 @@ public final class MainActivity extends AppCompatActivity {
         // Make sure that our progress bar isn't spinning and style it a bit
         ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
+
+        TextView textView = findViewById(R.id.jsonResult);
+
+
     }
 
     /**
      * Make an API call.
      */
     void startAPICall() {
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         try {
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                     Request.Method.GET,
-                    "",
+                    "https://api.iextrading.com/1.0/stock/AAPL/batch?types=quote",
                     null,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(final JSONObject response) {
                             Log.d(TAG, response.toString());
+                            TextView textView = findViewById(R.id.jsonResult);
+                            textView.setText(response.toString());
+
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(final VolleyError error) {
                             Log.w(TAG, error.toString());
                         }
+
                     });
             requestQueue.add(jsonObjectRequest);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        progressBar.setVisibility(View.INVISIBLE);
 
     }
 }
